@@ -1,4 +1,5 @@
 import cv2
+from PIL import Image
 from util import get_limits
 
 yellow = [0, 255, 255] # Yellow in BGR
@@ -12,7 +13,14 @@ while True:
 
     mask = cv2.inRange(hsvImage, lower, upper) # Create a mask for yellow objects
 
-    cv2.imshow('frame', mask)
+    mask_ = Image.fromarray(mask) # convert from np array to a PILLOW image
+    bbox = mask_.getbbox() # function from PILLOW to get bounding box of non-zero regions in the mask
+
+    if bbox is not None:
+        x1, y1, x2, y2 = bbox
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 5) # Draw rectangle around detected object
+
+    cv2.imshow('frame', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
